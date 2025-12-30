@@ -3,8 +3,9 @@ import { profileService } from '../services/profileService';
 import { pokemonService } from '../services/pokemonService';
 import { achievementService } from '../services/achievementService';
 import { worksheetService } from '../services/worksheetService';
+import { OFFLINE_KEY, USER_STATE_KEY_PREFIX } from './storage';
 
-const GAME_STATE_KEY = 'mathmon_game_state';
+const LEGACY_GAME_STATE_KEY = 'mathmon_game_state';
 const MIGRATION_KEY = 'mathmon_migrated_to_supabase';
 
 /**
@@ -12,8 +13,14 @@ const MIGRATION_KEY = 'mathmon_migrated_to_supabase';
  */
 export function hasLocalStorageData(): boolean {
   try {
-    const saved = localStorage.getItem(GAME_STATE_KEY);
-    return saved !== null && saved.length > 0;
+    // Check legacy key
+    const legacyData = localStorage.getItem(LEGACY_GAME_STATE_KEY);
+    if (legacyData !== null && legacyData.length > 0) {
+      return true;
+    }
+    // Check offline key
+    const offlineData = localStorage.getItem(OFFLINE_KEY);
+    return offlineData !== null && offlineData.length > 0;
   } catch {
     return false;
   }
@@ -42,11 +49,17 @@ function markMigrationComplete(): void {
 }
 
 /**
- * Load game state from localStorage
+ * Load game state from localStorage (checks legacy and offline keys)
  */
 function loadLocalGameState(): GameState | null {
   try {
-    const saved = localStorage.getItem(GAME_STATE_KEY);
+    // Try legacy key first
+    let saved = localStorage.getItem(LEGACY_GAME_STATE_KEY);
+    if (saved) {
+      return JSON.parse(saved) as GameState;
+    }
+    // Fall back to offline key
+    saved = localStorage.getItem(OFFLINE_KEY);
     if (saved) {
       return JSON.parse(saved) as GameState;
     }
@@ -173,6 +186,20 @@ export function resetMigrationStatus(): void {
  * Only call this after confirming data is safely in Supabase
  */
 export function clearLocalData(): void {
-  localStorage.removeItem(GAME_STATE_KEY);
+  // Clear legacy key
+  localStorage.removeItem(LEGACY_GAME_STATE_KEY);
   localStorage.removeItem(MIGRATION_KEY);
+
+  // Clear offline key
+  localStorage.removeItem(OFFLINE_KEY);
+
+  // Clear all user-scoped game state keys
+  const keysToRemove: string[] = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith(USER_STATE_KEY_PREFIX)) {
+      keysToRemove.push(key);
+    }
+  }
+  keysToRemove.forEach(key => localStorage.removeItem(key));
 }

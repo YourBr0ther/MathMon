@@ -18,30 +18,35 @@ import {
   getCurrentStreakDay,
 } from '../utils/storage';
 
-export function useGameState() {
+export function useGameState(userId?: string) {
   const [gameState, setGameState] = useState<GameState>(getDefaultGameState);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Load game state on mount
+  // Load game state on mount or when userId changes
   useEffect(() => {
-    const loaded = loadGameState();
+    // Prevent saves during load by temporarily marking as not loaded
+    setIsLoaded(false);
+
+    const loaded = loadGameState(userId);
     setGameState(loaded);
-    setIsLoaded(true);
 
     // Check for new day
     if (isNewDay(loaded)) {
       const updated = updateLastPlayedDate(loaded);
       setGameState(updated);
-      saveGameState(updated);
+      saveGameState(updated, userId);
     }
-  }, []);
+
+    // Re-enable saves after load is complete
+    setIsLoaded(true);
+  }, [userId]);
 
   // Save game state whenever it changes
   useEffect(() => {
     if (isLoaded) {
-      saveGameState(gameState);
+      saveGameState(gameState, userId);
     }
-  }, [gameState, isLoaded]);
+  }, [gameState, isLoaded, userId]);
 
   // Catch a Pokemon
   const catchPokemon = useCallback((pokemon: Pokemon, problemText?: string) => {

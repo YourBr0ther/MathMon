@@ -351,13 +351,26 @@ describe('storage utilities', () => {
     it('should remove game state from localStorage', () => {
       const state = getDefaultGameState();
       state.trainerName = 'Test';
-      saveGameState(state);
+      saveGameState(state); // Saves to offline key when no userId
 
-      expect(localStorage.getItem('mathmon_game_state')).not.toBeNull();
+      expect(localStorage.getItem('mathmon_offline_state')).not.toBeNull();
 
-      resetGame();
+      resetGame(); // Removes offline key when no userId
 
-      expect(localStorage.getItem('mathmon_game_state')).toBeNull();
+      expect(localStorage.getItem('mathmon_offline_state')).toBeNull();
+    });
+
+    it('should remove user-scoped game state from localStorage', () => {
+      const state = getDefaultGameState();
+      state.trainerName = 'Test';
+      const userId = 'test-user-123';
+      saveGameState(state, userId);
+
+      expect(localStorage.getItem(`mathmon_game_state_${userId}`)).not.toBeNull();
+
+      resetGame(userId);
+
+      expect(localStorage.getItem(`mathmon_game_state_${userId}`)).toBeNull();
     });
   });
 

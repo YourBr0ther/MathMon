@@ -11,7 +11,7 @@ import { SignUpScreen } from './components/screens/SignUpScreen';
 import { preloadStarters, preloadCommonSprites } from './utils/pokemonApi';
 import { DailyRewardModal, DailyRewardIndicator } from './components/common/DailyReward';
 import { isSupabaseConfigured } from './lib/supabase';
-import { migrateLocalStorageToSupabase, hasLocalStorageData } from './utils/migration';
+import { migrateLocalStorageToSupabase, hasLocalStorageData, clearLocalData } from './utils/migration';
 
 // Lazy load heavier screens for better performance
 const EndlessMode = lazy(() => import('./components/screens/EndlessMode').then(m => ({ default: m.EndlessMode })));
@@ -63,7 +63,7 @@ function AppContent() {
     canClaimReward,
     currentStreakDay,
     claimDailyReward,
-  } = useGameState();
+  } = useGameState(user?.id);
 
   const { playSound, isMuted, toggleMute } = useSound();
 
@@ -132,6 +132,7 @@ function AppContent() {
 
   // Handle logout
   const handleLogout = useCallback(async () => {
+    clearLocalData(); // Clear localStorage before signing out
     await signOut();
     setOfflineMode(false);
   }, [signOut]);

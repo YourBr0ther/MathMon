@@ -1,7 +1,13 @@
 import { GameState, Pokemon, Achievement, WorksheetResult } from '../types';
 import { ACHIEVEMENTS } from '../data/achievements';
 
-const GAME_STATE_KEY = 'mathmon_game_state';
+export const OFFLINE_KEY = 'mathmon_offline_state';
+export const USER_STATE_KEY_PREFIX = 'mathmon_game_state_';
+
+function getStorageKey(userId?: string): string {
+  // Treat empty string as no userId
+  return userId && userId.trim() ? `${USER_STATE_KEY_PREFIX}${userId}` : OFFLINE_KEY;
+}
 
 // Default game state for new players
 export function getDefaultGameState(): GameState {
@@ -25,9 +31,9 @@ export function getDefaultGameState(): GameState {
 }
 
 // Load game state from localStorage
-export function loadGameState(): GameState {
+export function loadGameState(userId?: string): GameState {
   try {
-    const saved = localStorage.getItem(GAME_STATE_KEY);
+    const saved = localStorage.getItem(getStorageKey(userId));
     if (saved) {
       const parsed = JSON.parse(saved) as GameState;
       // Merge with default achievements in case new ones were added
@@ -45,9 +51,9 @@ export function loadGameState(): GameState {
 }
 
 // Save game state to localStorage
-export function saveGameState(state: GameState): void {
+export function saveGameState(state: GameState, userId?: string): void {
   try {
-    localStorage.setItem(GAME_STATE_KEY, JSON.stringify(state));
+    localStorage.setItem(getStorageKey(userId), JSON.stringify(state));
   } catch (error) {
     console.error('Error saving game state:', error);
   }
@@ -201,8 +207,8 @@ export function updateLastPlayedDate(state: GameState): GameState {
 }
 
 // Reset game (for testing)
-export function resetGame(): void {
-  localStorage.removeItem(GAME_STATE_KEY);
+export function resetGame(userId?: string): void {
+  localStorage.removeItem(getStorageKey(userId));
 }
 
 // Calculate accuracy percentage
