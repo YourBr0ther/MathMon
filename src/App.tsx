@@ -1,9 +1,10 @@
 import { useState, useCallback, useEffect, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Volume2, VolumeX, LogOut } from 'lucide-react';
+import { Volume2, VolumeX, LogOut, Music, MusicOff } from 'lucide-react';
 import { Screen, Worksheet, Pokemon, WorksheetResult, DailyReward, AuthScreen } from './types';
 import { useGameState } from './hooks/useGameState';
 import { useSound } from './hooks/useSound';
+import { useBackgroundMusic } from './hooks/useBackgroundMusic';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { HomeScreen } from './components/screens/HomeScreen';
 import { LoginScreen } from './components/screens/LoginScreen';
@@ -68,6 +69,7 @@ function AppContent() {
   } = useGameState(user?.id);
 
   const { playSound, isMuted, toggleMute } = useSound();
+  const { isEnabled: isMusicEnabled, toggleMusic, play: playMusic } = useBackgroundMusic();
 
   // Handle data migration when user logs in
   useEffect(() => {
@@ -409,6 +411,25 @@ function AppContent() {
             <LogOut className="w-5 h-5 text-[#8B7A9E]" />
           </motion.button>
         )}
+
+        {/* Music Toggle Button */}
+        <motion.button
+          onClick={() => {
+            toggleMusic();
+            // User interaction enables autoplay
+            if (!isMusicEnabled) playMusic();
+          }}
+          className="nav-btn"
+          whileHover={{ scale: 1.1, rotate: 5 }}
+          whileTap={{ scale: 0.9 }}
+          title={isMusicEnabled ? 'Turn off music' : 'Turn on music'}
+        >
+          {isMusicEnabled ? (
+            <Music className="w-5 h-5 text-[#8B7A9E]" />
+          ) : (
+            <MusicOff className="w-5 h-5 text-[#8B7A9E]" />
+          )}
+        </motion.button>
 
         {/* Sound Toggle Button */}
         <motion.button
