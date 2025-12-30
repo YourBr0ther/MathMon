@@ -172,9 +172,9 @@ export function LoginScreen({
         <motion.div
           animate={{ y: [0, -8, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          className="mt-2"
+          className="mt-2 flex justify-center"
         >
-          <Heart className="w-6 h-6 sm:w-8 sm:h-8 mx-auto text-[#FFADC6] fill-[#FFADC6]" />
+          <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-[#FFADC6] fill-[#FFADC6]" />
         </motion.div>
       </motion.div>
 
