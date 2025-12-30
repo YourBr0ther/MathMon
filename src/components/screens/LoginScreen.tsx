@@ -117,7 +117,7 @@ export function LoginScreen({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="trainer@pokemon.com"
-                    className="input-kawaii w-full pl-10"
+                    className="input-kawaii w-full !pl-12"
                     disabled={loading}
                   />
                 </div>
@@ -210,7 +210,7 @@ export function LoginScreen({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="trainer@pokemon.com"
-                className="input-kawaii w-full pl-10"
+                className="input-kawaii w-full !pl-12"
                 disabled={loading}
                 required
               />
@@ -228,7 +228,7 @@ export function LoginScreen({
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Your secret password"
-                className="input-kawaii w-full pl-10"
+                className="input-kawaii w-full !pl-12"
                 disabled={loading}
                 required
               />

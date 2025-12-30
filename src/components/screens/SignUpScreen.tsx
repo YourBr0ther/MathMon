@@ -169,7 +169,7 @@ export function SignUpScreen({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="trainer@pokemon.com"
-                className="input-kawaii w-full pl-10"
+                className="input-kawaii w-full !pl-12"
                 disabled={loading}
                 required
               />
@@ -187,7 +187,7 @@ export function SignUpScreen({
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="At least 6 characters"
-                className="input-kawaii w-full pl-10"
+                className="input-kawaii w-full !pl-12"
                 disabled={loading}
                 required
                 minLength={6}
@@ -211,7 +211,7 @@ export function SignUpScreen({
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Type password again"
-                className="input-kawaii w-full pl-10"
+                className="input-kawaii w-full !pl-12"
                 disabled={loading}
                 required
               />
