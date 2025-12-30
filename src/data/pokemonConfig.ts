@@ -157,6 +157,9 @@ export const SPRITE_BASE_URL = 'https://raw.githubusercontent.com/PokeAPI/sprite
 export const OFFICIAL_ARTWORK_URL = `${SPRITE_BASE_URL}/other/official-artwork`;
 export const SHOWDOWN_URL = `${SPRITE_BASE_URL}/other/showdown`;
 
+// Cry audio URLs
+export const CRY_BASE_URL = 'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest';
+
 export function getPokemonSprite(id: number): string {
   return `${SPRITE_BASE_URL}/${id}.png`;
 }
@@ -167,4 +170,8 @@ export function getPokemonOfficialArtwork(id: number): string {
 
 export function getPokemonAnimatedSprite(id: number): string {
   return `${SHOWDOWN_URL}/${id}.gif`;
+}
+
+export function getPokemonCryUrl(id: number): string {
+  return `${CRY_BASE_URL}/${id}.ogg`;
 }

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { MathProblem, Pokemon, Screen } from '../../types';
 import { generateProblemByDifficulty, calculateDifficultyFromStreak } from '../../utils/mathGenerator';
-import { fetchPokemon } from '../../utils/pokemonApi';
+import { fetchPokemon, playPokemonCry } from '../../utils/pokemonApi';
 import { getRandomPokemonId, getStarterPokemonId } from '../../data/pokemonConfig';
 import { MathQuestion } from '../game/MathQuestion';
 import { AnswerButtons } from '../game/AnswerButtons';
@@ -109,6 +109,7 @@ export function EndlessMode({
           setCaughtPokemon(currentPokemon);
           setShowCatchAnimation(true);
           playSound('catch');
+          playPokemonCry(currentPokemon.id);
           onCatchPokemon(currentPokemon, currentProblem.question);
           setCorrectInRow(0);
         }, 500);

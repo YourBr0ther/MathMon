@@ -60,9 +60,9 @@ export function HomeScreen({ gameState, onNavigate, onSetTrainerName }: HomeScre
         <motion.div
           animate={{ y: [0, -8, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          className="mt-1 sm:mt-3"
+          className="mt-1 sm:mt-3 flex justify-center"
         >
-          <Heart className="w-5 h-5 sm:w-10 sm:h-10 mx-auto text-[#FFADC6] fill-[#FFADC6] drop-shadow-lg" />
+          <Heart className="w-5 h-5 sm:w-10 sm:h-10 text-[#FFADC6] fill-[#FFADC6] drop-shadow-lg" />
         </motion.div>
       </motion.div>
 

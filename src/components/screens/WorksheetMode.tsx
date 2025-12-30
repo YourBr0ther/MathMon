@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Screen, Worksheet, MathProblem, WorksheetResult, Pokemon } from '../../types';
 import { generateWorksheet } from '../../utils/mathGenerator';
-import { fetchPokemon } from '../../utils/pokemonApi';
+import { fetchPokemon, playPokemonCry } from '../../utils/pokemonApi';
 import { getRandomPokemonId } from '../../data/pokemonConfig';
 import { MathQuestion } from '../game/MathQuestion';
 import { AnswerButtons } from '../game/AnswerButtons';
@@ -126,6 +126,7 @@ export function WorksheetMode({
   const handleClaimReward = () => {
     if (rewardPokemon) {
       playSound('catch');
+      playPokemonCry(rewardPokemon.id);
       onCatchPokemon(rewardPokemon, `${worksheet.name} reward!`);
     }
     onNavigate('worksheetSelect');

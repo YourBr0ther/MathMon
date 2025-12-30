@@ -1,5 +1,5 @@
 import { Pokemon, PokemonType } from '../types';
-import { getPokemonSprite, getPokemonOfficialArtwork, MAX_POKEMON_ID } from '../data/pokemonConfig';
+import { getPokemonSprite, getPokemonOfficialArtwork, getPokemonCryUrl, MAX_POKEMON_ID } from '../data/pokemonConfig';
 
 const POKEAPI_BASE_URL = 'https://pokeapi.co/api/v2';
 const CACHE_KEY = 'mathmon_pokemon_cache';
@@ -203,4 +203,35 @@ export async function preloadCommonSprites(): Promise<void> {
   // Preload starter sprites and some common ones
   const commonIds = [1, 4, 7, 25, 133, 39, 35, 52, 54, 63];
   await preloadPokemonSprites(commonIds);
+}
+
+// Play Pokemon cry audio
+let currentCryAudio: HTMLAudioElement | null = null;
+
+export function playPokemonCry(pokemonId: number, volume: number = 0.5): void {
+  // Stop any currently playing cry
+  if (currentCryAudio) {
+    currentCryAudio.pause();
+    currentCryAudio = null;
+  }
+
+  try {
+    const cryUrl = getPokemonCryUrl(pokemonId);
+    const audio = new Audio(cryUrl);
+    audio.volume = Math.max(0, Math.min(1, volume));
+    currentCryAudio = audio;
+
+    audio.play().catch(error => {
+      console.warn(`Failed to play Pokemon cry for #${pokemonId}:`, error);
+    });
+
+    // Clean up reference when audio ends
+    audio.onended = () => {
+      if (currentCryAudio === audio) {
+        currentCryAudio = null;
+      }
+    };
+  } catch (error) {
+    console.warn(`Error setting up Pokemon cry for #${pokemonId}:`, error);
+  }
 }
