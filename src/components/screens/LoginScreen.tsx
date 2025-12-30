@@ -255,20 +255,24 @@ export function LoginScreen({
           </Button>
         </form>
 
-        <div className="mt-10 pt-6 border-t border-[#E8DFF0] flex flex-col gap-6">
-          <Button onClick={onSwitchToSignUp} variant="secondary" fullWidth>
-            <span className="flex items-center justify-center gap-2">
-              <UserPlus className="w-5 h-5" />
-              Create Account
-            </span>
-          </Button>
+        <div className="!mt-12 !pt-8 border-t border-[#E8DFF0]">
+          <div className="!mb-8">
+            <Button onClick={onSwitchToSignUp} variant="secondary" fullWidth>
+              <span className="flex items-center justify-center gap-2">
+                <UserPlus className="w-5 h-5" />
+                Create Account
+              </span>
+            </Button>
+          </div>
 
-          <Button onClick={onPlayOffline} variant="mint" fullWidth>
-            <span className="flex items-center justify-center gap-2">
-              <WifiOff className="w-5 h-5" />
-              Play Offline
-            </span>
-          </Button>
+          <div>
+            <Button onClick={onPlayOffline} variant="mint" fullWidth>
+              <span className="flex items-center justify-center gap-2">
+                <WifiOff className="w-5 h-5" />
+                Play Offline
+              </span>
+            </Button>
+          </div>
         </div>
       </motion.div>
     </div>
