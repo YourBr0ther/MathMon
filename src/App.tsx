@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Volume2, VolumeX, Cloud, LogOut } from 'lucide-react';
+import { Volume2, VolumeX, LogOut } from 'lucide-react';
 import { Screen, Worksheet, Pokemon, WorksheetResult, DailyReward, AuthScreen } from './types';
 import { useGameState } from './hooks/useGameState';
 import { useSound } from './hooks/useSound';
@@ -12,6 +12,8 @@ import { preloadStarters, preloadCommonSprites } from './utils/pokemonApi';
 import { DailyRewardModal, DailyRewardIndicator } from './components/common/DailyReward';
 import { isSupabaseConfigured } from './lib/supabase';
 import { migrateLocalStorageToSupabase, hasLocalStorageData, clearLocalData } from './utils/migration';
+import { SyncIndicator } from './components/common/SyncIndicator';
+import { clearQueue as clearSyncQueue } from './services/cloudSync';
 
 // Lazy load heavier screens for better performance
 const EndlessMode = lazy(() => import('./components/screens/EndlessMode').then(m => ({ default: m.EndlessMode })));
@@ -133,6 +135,7 @@ function AppContent() {
   // Handle logout
   const handleLogout = useCallback(async () => {
     clearLocalData(); // Clear localStorage before signing out
+    clearSyncQueue(); // Clear pending sync operations
     await signOut();
     setOfflineMode(false);
   }, [signOut]);
@@ -379,17 +382,7 @@ function AppContent() {
       {/* Top Controls */}
       <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
         {/* Cloud sync indicator */}
-        {user && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="nav-btn flex items-center gap-1.5 px-3"
-            title="Synced to cloud"
-          >
-            <Cloud className="w-4 h-4 text-[#8EC5FC]" />
-            <span className="text-xs text-[#8B7A9E] hidden sm:inline">Synced</span>
-          </motion.div>
-        )}
+        {user && <SyncIndicator />}
 
         {/* Offline mode indicator */}
         {offlineMode && !user && (
