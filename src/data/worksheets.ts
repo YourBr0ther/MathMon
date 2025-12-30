@@ -152,16 +152,16 @@ export function getGradeLevelName(gradeLevel: GradeLevel): string {
   }
 }
 
-// Get grade level color
+// Get grade level color (soft pastel tones to match dreamy theme)
 export function getGradeLevelColor(gradeLevel: GradeLevel): string {
   switch (gradeLevel) {
     case 'kindergarten':
-      return '#78C850'; // Green
+      return '#95D9C3'; // Soft mint green
     case 'first':
-      return '#6890F0'; // Blue
+      return '#A8C8FF'; // Soft sky blue
     case 'second':
-      return '#F85888'; // Pink
+      return '#FFADC6'; // Soft rose pink
     default:
-      return '#A8A878';
+      return '#B8A8C8';
   }
 }

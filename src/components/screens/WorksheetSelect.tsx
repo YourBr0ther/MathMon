@@ -45,8 +45,12 @@ export function WorksheetSelect({ onNavigate, onSelectWorksheet }: WorksheetSele
             >
               {/* Grade Header */}
               <div
-                className="px-3 sm:px-4 py-2 rounded-t-2xl text-white font-display font-bold text-base sm:text-lg"
-                style={{ backgroundColor: color }}
+                className="px-3 sm:px-4 py-2 rounded-t-2xl font-display font-bold text-base sm:text-lg border-b-2"
+                style={{
+                  backgroundColor: `${color}40`, // 25% opacity
+                  borderColor: color,
+                  color: '#5D4E60'
+                }}
               >
                 {getGradeLevelName(grade)}
               </div>
