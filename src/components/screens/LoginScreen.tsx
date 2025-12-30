@@ -255,7 +255,7 @@ export function LoginScreen({
           </Button>
         </form>
 
-        <div className="mt-8 pt-5 border-t border-[#E8DFF0] flex flex-col gap-6">
+        <div className="mt-10 pt-6 border-t border-[#E8DFF0] flex flex-col gap-6">
           <Button onClick={onSwitchToSignUp} variant="secondary" fullWidth>
             <span className="flex items-center justify-center gap-2">
               <UserPlus className="w-5 h-5" />
