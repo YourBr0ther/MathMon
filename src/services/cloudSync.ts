@@ -22,6 +22,9 @@ let isSyncing = false;
 let lastSyncTime: Date | null = null;
 const syncListeners: Set<() => void> = new Set();
 
+// Cached state object to prevent infinite re-renders with useSyncExternalStore
+let cachedState = { isSyncing, lastSyncTime };
+
 /**
  * Subscribe to sync status changes
  */
@@ -34,14 +37,16 @@ export function subscribeSyncStatus(listener: () => void): () => void {
  * Notify all listeners of sync status change
  */
 function notifySyncListeners(): void {
+  // Update cached state object only when values change
+  cachedState = { isSyncing, lastSyncTime };
   syncListeners.forEach(listener => listener());
 }
 
 /**
- * Get current sync state
+ * Get current sync state - returns same object reference if unchanged
  */
 export function getSyncState(): { isSyncing: boolean; lastSyncTime: Date | null } {
-  return { isSyncing, lastSyncTime };
+  return cachedState;
 }
 
 /**
