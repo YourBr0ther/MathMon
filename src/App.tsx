@@ -12,7 +12,7 @@ import { SignUpScreen } from './components/screens/SignUpScreen';
 import { preloadStarters, preloadCommonSprites } from './utils/pokemonApi';
 import { DailyRewardModal, DailyRewardIndicator } from './components/common/DailyReward';
 import { isSupabaseConfigured } from './lib/supabase';
-import { migrateLocalStorageToSupabase, hasLocalStorageData, clearLocalData } from './utils/migration';
+import { clearLocalData } from './utils/migration';
 import { SyncIndicator } from './components/common/SyncIndicator';
 import { clearQueue as clearSyncQueue } from './services/cloudSync';
 
@@ -43,7 +43,6 @@ function AppContent() {
   const [selectedWorksheet, setSelectedWorksheet] = useState<Worksheet | null>(null);
   const [showDailyReward, setShowDailyReward] = useState(false);
   const [offlineMode, setOfflineMode] = useState(false);
-  const [migrationDone, setMigrationDone] = useState(false);
 
   const {
     user,
@@ -71,19 +70,13 @@ function AppContent() {
   const { playSound, isMuted, toggleMute } = useSound();
   const { isEnabled: isMusicEnabled, toggleMusic, play: playMusic } = useBackgroundMusic();
 
-  // Handle data migration when user logs in
+  // Clear localStorage when user logs in to ensure fresh cloud load
+  // This keeps offline and cloud worlds completely separate
   useEffect(() => {
-    const handleMigration = async () => {
-      if (user && hasLocalStorageData() && !migrationDone) {
-        const result = await migrateLocalStorageToSupabase(user.id);
-        if (result.success) {
-          console.log('Migration complete:', result.stats);
-          setMigrationDone(true);
-        }
-      }
-    };
-    handleMigration();
-  }, [user, migrationDone]);
+    if (user) {
+      clearLocalData();
+    }
+  }, [user]);
 
   // Determine if we should show auth screens
   const showAuth = isConfigured && !user && !offlineMode && !authLoading;
