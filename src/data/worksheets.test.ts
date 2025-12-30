@@ -199,19 +199,19 @@ describe('worksheets', () => {
   });
 
   describe('getGradeLevelColor', () => {
-    it('should return green for kindergarten', () => {
+    it('should return soft mint green for kindergarten', () => {
       const color = getGradeLevelColor('kindergarten');
-      expect(color).toBe('#78C850');
+      expect(color).toBe('#95D9C3');
     });
 
-    it('should return blue for first grade', () => {
+    it('should return soft sky blue for first grade', () => {
       const color = getGradeLevelColor('first');
-      expect(color).toBe('#6890F0');
+      expect(color).toBe('#A8C8FF');
     });
 
-    it('should return pink for second grade', () => {
+    it('should return soft rose pink for second grade', () => {
       const color = getGradeLevelColor('second');
-      expect(color).toBe('#F85888');
+      expect(color).toBe('#FFADC6');
     });
 
     it('should return valid hex colors', () => {
@@ -224,7 +224,7 @@ describe('worksheets', () => {
 
     it('should return fallback color for unknown grades', () => {
       const color = getGradeLevelColor('unknown' as GradeLevel);
-      expect(color).toBe('#A8A878');
+      expect(color).toBe('#B8A8C8');
     });
   });
 });

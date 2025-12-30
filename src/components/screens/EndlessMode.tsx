@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { MathProblem, Pokemon, Screen } from '../../types';
-import { generateProblemByDifficulty, calculateDifficultyFromStreak } from '../../utils/mathGenerator';
+import { generateProblemByDifficulty } from '../../utils/mathGenerator';
+import { getEncouragingMessage, getStrategyHint } from '../../utils/feedbackHelpers';
 import { fetchPokemon, playPokemonCry } from '../../utils/pokemonApi';
 import { getRandomPokemonId, getStarterPokemonId } from '../../data/pokemonConfig';
 import { MathQuestion } from '../game/MathQuestion';
@@ -35,6 +36,7 @@ export function EndlessMode({
   const [currentProblem, setCurrentProblem] = useState<MathProblem | null>(null);
   const [currentPokemon, setCurrentPokemon] = useState<Pokemon | null>(null);
   const [streak, setStreak] = useState(0);
+  const [difficulty, setDifficulty] = useState(1); // Track difficulty separately for gentler drops
   const [correctInRow, setCorrectInRow] = useState(0);
   const [showResult, setShowResult] = useState<'correct' | 'wrong' | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -43,21 +45,21 @@ export function EndlessMode({
   const [showMilestone, setShowMilestone] = useState(false);
   const [milestoneStreak, setMilestoneStreak] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [feedbackHint, setFeedbackHint] = useState<{ message: string; hint: string } | null>(null);
 
   // Generate new problem
   const generateNewProblem = useCallback(() => {
-    const difficulty = calculateDifficultyFromStreak(streak);
     const problem = generateProblemByDifficulty(difficulty);
     setCurrentProblem(problem);
     setShowResult(null);
     setSelectedAnswer(null);
-  }, [streak]);
+    setFeedbackHint(null);
+  }, [difficulty]);
 
   // Load a new Pokemon to catch
   const loadNewPokemon = useCallback(async () => {
     setIsLoading(true);
     try {
-      const difficulty = calculateDifficultyFromStreak(streak);
       // First few catches are starters
       const pokemonId = totalCatches < 4
         ? getStarterPokemonId(totalCatches)
@@ -69,7 +71,7 @@ export function EndlessMode({
     } finally {
       setIsLoading(false);
     }
-  }, [streak, totalCatches]);
+  }, [difficulty, totalCatches]);
 
   // Initialize game
   useEffect(() => {
@@ -94,6 +96,11 @@ export function EndlessMode({
 
       const newCorrectInRow = correctInRow + 1;
       setCorrectInRow(newCorrectInRow);
+
+      // Increase difficulty every 5 correct answers (max 10)
+      if (newStreak % 5 === 0 && difficulty < 10) {
+        setDifficulty(prev => Math.min(10, prev + 1));
+      }
 
       // Check for milestone
       if ([5, 10, 25, 50, 100].includes(newStreak)) {
@@ -123,16 +130,27 @@ export function EndlessMode({
       playSound('wrong');
       setShowResult('wrong');
       onRecordAnswer(false);
+
+      // Gentler difficulty drop: only decrease by 1 level (minimum 1)
+      setDifficulty(prev => Math.max(1, prev - 1));
+
+      // Reset streak but keep some progress feel
       setStreak(0);
       setCorrectInRow(0);
       onUpdateStreak(0);
 
-      // Show correct answer briefly, then generate new problem
+      // Show encouraging feedback with strategy hint
+      setFeedbackHint({
+        message: getEncouragingMessage(),
+        hint: getStrategyHint(currentProblem),
+      });
+
+      // Show feedback longer, then generate new problem
       setTimeout(() => {
         generateNewProblem();
-      }, 1500);
+      }, 2500);
     }
-  }, [currentProblem, currentPokemon, streak, correctInRow, showResult, generateNewProblem, onCatchPokemon, onUpdateStreak, onRecordAnswer, playSound]);
+  }, [currentProblem, currentPokemon, streak, difficulty, correctInRow, showResult, generateNewProblem, onCatchPokemon, onUpdateStreak, onRecordAnswer, playSound]);
 
   // Handle catch animation complete
   const handleCatchComplete = useCallback(() => {
@@ -206,6 +224,26 @@ export function EndlessMode({
               problem={currentProblem}
               showResult={showResult}
             />
+
+            {/* Feedback hint on wrong answer */}
+            <AnimatePresence>
+              {feedbackHint && showResult === 'wrong' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  className="bg-white/95 backdrop-blur rounded-2xl px-4 py-3 shadow-lg border-2 border-[#E0C3FC] max-w-xs sm:max-w-sm text-center"
+                >
+                  <p className="text-[#6B5B7A] font-medium text-sm sm:text-base mb-1">
+                    {feedbackHint.message}
+                  </p>
+                  <p className="text-[#8B7A9E] text-xs sm:text-sm">
+                    {feedbackHint.hint}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <AnswerButtons
               options={currentProblem.options}
               onAnswer={handleAnswer}
@@ -221,8 +259,8 @@ export function EndlessMode({
       {/* Difficulty indicator */}
       <div className="mt-3 sm:mt-4 text-center">
         <span className="level-badge text-xs sm:text-sm">
-          Level {calculateDifficultyFromStreak(streak)} •{' '}
-          {streak < 10 ? 'Kindergarten' : streak < 25 ? '1st Grade' : '2nd Grade'}
+          Level {difficulty} •{' '}
+          {difficulty <= 2 ? 'Kindergarten' : difficulty <= 6 ? '1st Grade' : '2nd Grade'}
         </span>
       </div>
 

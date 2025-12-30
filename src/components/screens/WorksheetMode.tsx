@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Screen, Worksheet, MathProblem, WorksheetResult, Pokemon } from '../../types';
 import { generateWorksheet } from '../../utils/mathGenerator';
+import { getEncouragingMessage, getStrategyHint } from '../../utils/feedbackHelpers';
 import { fetchPokemon, playPokemonCry } from '../../utils/pokemonApi';
 import { getRandomPokemonId } from '../../data/pokemonConfig';
 import { MathQuestion } from '../game/MathQuestion';
@@ -36,6 +37,7 @@ export function WorksheetMode({
   const [isComplete, setIsComplete] = useState(false);
   const [rewardPokemon, setRewardPokemon] = useState<Pokemon | null>(null);
   const [celebrationEmoji, setCelebrationEmoji] = useState<string>('');
+  const [feedbackHint, setFeedbackHint] = useState<{ message: string; hint: string } | null>(null);
 
   // Fun emojis for correct answers
   const celebrationEmojis = ['🎉', '⭐', '🌟', '✨', '💫', '🎊', '🥳', '👏', '💪', '🔥'];
@@ -75,6 +77,7 @@ export function WorksheetMode({
       setShowResult('correct');
       setCorrectCount(prev => prev + 1);
       onRecordAnswer(true);
+      setFeedbackHint(null);
 
       // Show celebration emoji
       const emoji = celebrationEmojis[Math.floor(Math.random() * celebrationEmojis.length)];
@@ -83,11 +86,19 @@ export function WorksheetMode({
       playSound('wrong');
       setShowResult('wrong');
       onRecordAnswer(false);
+
+      // Show encouraging feedback with strategy hint
+      setFeedbackHint({
+        message: getEncouragingMessage(),
+        hint: getStrategyHint(currentProblem),
+      });
     }
 
-    // Move to next problem or complete
+    // Move to next problem or complete (longer delay for wrong answers to read hint)
+    const delay = isCorrect ? 1200 : 2500;
     setTimeout(() => {
       setCelebrationEmoji('');
+      setFeedbackHint(null);
       if (currentIndex + 1 >= problems.length) {
         // Worksheet complete!
         const endTime = Date.now();
@@ -112,7 +123,7 @@ export function WorksheetMode({
         setShowResult(null);
         setSelectedAnswer(null);
       }
-    }, 1200);
+    }, delay);
   }, [currentProblem, currentIndex, problems.length, correctCount, showResult, startTime, worksheet.id, onComplete, onRecordAnswer, playSound]);
 
   const calculateStars = (correct: number, total: number): number => {
@@ -272,6 +283,26 @@ export function WorksheetMode({
           problem={currentProblem}
           showResult={showResult}
         />
+
+        {/* Feedback hint on wrong answer */}
+        <AnimatePresence>
+          {feedbackHint && showResult === 'wrong' && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              className="bg-white/95 backdrop-blur rounded-2xl px-4 py-3 shadow-lg border-2 border-[#E0C3FC] max-w-xs sm:max-w-sm text-center"
+            >
+              <p className="text-[#6B5B7A] font-medium text-sm sm:text-base mb-1">
+                {feedbackHint.message}
+              </p>
+              <p className="text-[#8B7A9E] text-xs sm:text-sm">
+                {feedbackHint.hint}
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <AnswerButtons
           options={currentProblem.options}
           onAnswer={handleAnswer}
