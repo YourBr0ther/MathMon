@@ -23,7 +23,7 @@ let lastSyncTime: Date | null = null;
 const syncListeners: Set<() => void> = new Set();
 
 // Cached state object to prevent infinite re-renders with useSyncExternalStore
-let cachedState = { isSyncing, lastSyncTime };
+let cachedState: { isSyncing: boolean; lastSyncTime: Date | null } = { isSyncing, lastSyncTime };
 
 /**
  * Subscribe to sync status changes
