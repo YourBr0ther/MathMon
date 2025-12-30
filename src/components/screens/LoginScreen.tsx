@@ -263,7 +263,7 @@ export function LoginScreen({
             </span>
           </Button>
 
-          <Button onClick={onPlayOffline} variant="ghost" fullWidth>
+          <Button onClick={onPlayOffline} variant="mint" fullWidth>
             <span className="flex items-center justify-center gap-2">
               <WifiOff className="w-5 h-5" />
               Play Offline
