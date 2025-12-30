@@ -1,12 +1,17 @@
 import { useState, useCallback, useEffect, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Volume2, VolumeX } from 'lucide-react';
-import { Screen, Worksheet, Pokemon, WorksheetResult, DailyReward } from './types';
+import { Volume2, VolumeX, Cloud, LogOut } from 'lucide-react';
+import { Screen, Worksheet, Pokemon, WorksheetResult, DailyReward, AuthScreen } from './types';
 import { useGameState } from './hooks/useGameState';
 import { useSound } from './hooks/useSound';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { HomeScreen } from './components/screens/HomeScreen';
+import { LoginScreen } from './components/screens/LoginScreen';
+import { SignUpScreen } from './components/screens/SignUpScreen';
 import { preloadStarters, preloadCommonSprites } from './utils/pokemonApi';
 import { DailyRewardModal, DailyRewardIndicator } from './components/common/DailyReward';
+import { isSupabaseConfigured } from './lib/supabase';
+import { migrateLocalStorageToSupabase, hasLocalStorageData } from './utils/migration';
 
 // Lazy load heavier screens for better performance
 const EndlessMode = lazy(() => import('./components/screens/EndlessMode').then(m => ({ default: m.EndlessMode })));
@@ -28,10 +33,24 @@ function ScreenLoader() {
   );
 }
 
-function App() {
+// Inner app component that uses auth context
+function AppContent() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('home');
+  const [authScreen, setAuthScreen] = useState<AuthScreen>('login');
   const [selectedWorksheet, setSelectedWorksheet] = useState<Worksheet | null>(null);
   const [showDailyReward, setShowDailyReward] = useState(false);
+  const [offlineMode, setOfflineMode] = useState(false);
+  const [migrationDone, setMigrationDone] = useState(false);
+
+  const {
+    user,
+    loading: authLoading,
+    isConfigured,
+    signIn,
+    signUp,
+    signOut,
+    resetPassword,
+  } = useAuth();
 
   const {
     gameState,
@@ -47,6 +66,23 @@ function App() {
   } = useGameState();
 
   const { playSound, isMuted, toggleMute } = useSound();
+
+  // Handle data migration when user logs in
+  useEffect(() => {
+    const handleMigration = async () => {
+      if (user && hasLocalStorageData() && !migrationDone) {
+        const result = await migrateLocalStorageToSupabase(user.id);
+        if (result.success) {
+          console.log('Migration complete:', result.stats);
+          setMigrationDone(true);
+        }
+      }
+    };
+    handleMigration();
+  }, [user, migrationDone]);
+
+  // Determine if we should show auth screens
+  const showAuth = isConfigured && !user && !offlineMode && !authLoading;
 
   // Preload starter Pokemon and common sprites on mount
   useEffect(() => {
@@ -93,6 +129,88 @@ function App() {
   const handleCompleteWorksheet = useCallback((result: WorksheetResult) => {
     completeWorksheetResult(result);
   }, [completeWorksheetResult]);
+
+  // Handle logout
+  const handleLogout = useCallback(async () => {
+    await signOut();
+    setOfflineMode(false);
+  }, [signOut]);
+
+  // Auth loading screen
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="text-center"
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            className="w-16 h-16 mx-auto mb-4 rounded-full pokeball-gradient border-4 border-gray-800"
+          />
+          <p className="text-white text-xl font-bold">Loading...</p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Auth screens (login/signup)
+  if (showAuth) {
+    if (authScreen === 'signup') {
+      return (
+        <div className="min-h-screen relative">
+          <div className="bg-dreamscape">
+            {/* Soft floating clouds */}
+            <motion.div
+              className="cloud"
+              style={{ top: '10%', left: '5%', width: '180px', height: '80px' }}
+              animate={{ x: [0, 30, 0], y: [0, -15, 0] }}
+              transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <motion.div
+              className="cloud"
+              style={{ top: '25%', right: '10%', width: '140px', height: '60px' }}
+              animate={{ x: [0, -20, 0], y: [0, 10, 0] }}
+              transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+            />
+          </div>
+          <SignUpScreen
+            onSignUp={signUp}
+            onSwitchToLogin={() => setAuthScreen('login')}
+            onPlayOffline={() => setOfflineMode(true)}
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div className="min-h-screen relative">
+        <div className="bg-dreamscape">
+          {/* Soft floating clouds */}
+          <motion.div
+            className="cloud"
+            style={{ top: '10%', left: '5%', width: '180px', height: '80px' }}
+            animate={{ x: [0, 30, 0], y: [0, -15, 0] }}
+            transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <motion.div
+            className="cloud"
+            style={{ top: '25%', right: '10%', width: '140px', height: '60px' }}
+            animate={{ x: [0, -20, 0], y: [0, 10, 0] }}
+            transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+          />
+        </div>
+        <LoginScreen
+          onLogin={signIn}
+          onSwitchToSignUp={() => setAuthScreen('signup')}
+          onForgotPassword={resetPassword}
+          onPlayOffline={() => setOfflineMode(true)}
+        />
+      </div>
+    );
+  }
 
   // Loading screen
   if (!isLoaded) {
@@ -257,20 +375,62 @@ function App() {
         ))}
       </div>
 
-      {/* Sound Toggle Button - Kawaii Style */}
-      <motion.button
-        onClick={toggleMute}
-        className="fixed top-4 right-4 z-50 nav-btn"
-        whileHover={{ scale: 1.1, rotate: 5 }}
-        whileTap={{ scale: 0.9 }}
-        title={isMuted ? 'Unmute sounds' : 'Mute sounds'}
-      >
-        {isMuted ? (
-          <VolumeX className="w-5 h-5 text-[#8B7A9E]" />
-        ) : (
-          <Volume2 className="w-5 h-5 text-[#8B7A9E]" />
+      {/* Top Controls */}
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+        {/* Cloud sync indicator */}
+        {user && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="nav-btn flex items-center gap-1.5 px-3"
+            title="Synced to cloud"
+          >
+            <Cloud className="w-4 h-4 text-[#8EC5FC]" />
+            <span className="text-xs text-[#8B7A9E] hidden sm:inline">Synced</span>
+          </motion.div>
         )}
-      </motion.button>
+
+        {/* Offline mode indicator */}
+        {offlineMode && !user && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="nav-btn flex items-center gap-1.5 px-3"
+            onClick={() => setOfflineMode(false)}
+            title="Playing offline - click to sign in"
+          >
+            <span className="text-xs text-[#8B7A9E]">Offline</span>
+          </motion.button>
+        )}
+
+        {/* Logout button */}
+        {user && (
+          <motion.button
+            onClick={handleLogout}
+            className="nav-btn"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            title="Sign out"
+          >
+            <LogOut className="w-5 h-5 text-[#8B7A9E]" />
+          </motion.button>
+        )}
+
+        {/* Sound Toggle Button */}
+        <motion.button
+          onClick={toggleMute}
+          className="nav-btn"
+          whileHover={{ scale: 1.1, rotate: 5 }}
+          whileTap={{ scale: 0.9 }}
+          title={isMuted ? 'Unmute sounds' : 'Mute sounds'}
+        >
+          {isMuted ? (
+            <VolumeX className="w-5 h-5 text-[#8B7A9E]" />
+          ) : (
+            <Volume2 className="w-5 h-5 text-[#8B7A9E]" />
+          )}
+        </motion.button>
+      </div>
 
       {/* Daily Reward Modal */}
       <AnimatePresence>
@@ -302,6 +462,15 @@ function App() {
         </motion.div>
       </AnimatePresence>
     </div>
+  );
+}
+
+// Wrapper component that provides Auth context
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

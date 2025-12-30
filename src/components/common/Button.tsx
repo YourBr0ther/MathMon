@@ -9,6 +9,7 @@ interface ButtonProps {
   disabled?: boolean;
   fullWidth?: boolean;
   className?: string;
+  type?: 'button' | 'submit' | 'reset';
 }
 
 export const Button = memo(function Button({
@@ -19,6 +20,7 @@ export const Button = memo(function Button({
   disabled = false,
   fullWidth = false,
   className = '',
+  type = 'button',
 }: ButtonProps) {
   const variantClasses = {
     primary: 'btn-primary-kawaii',
@@ -36,6 +38,7 @@ export const Button = memo(function Button({
 
   return (
     <motion.button
+      type={type}
       onClick={onClick}
       disabled={disabled}
       className={`

@@ -25,3 +25,8 @@ dist-ssr
 
 # Playwright MCP
 .playwright-mcp/
+
+# Environment files
+.env
+.env.local
+.env.*.local

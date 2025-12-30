@@ -125,3 +125,6 @@ export type SoundEffect =
 
 // Navigation
 export type Screen = 'home' | 'endless' | 'worksheet' | 'worksheetSelect' | 'pokedex' | 'profile' | 'catch';
+
+// Auth Screens (handled separately from main game)
+export type AuthScreen = 'login' | 'signup';
