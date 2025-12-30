@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { LogIn, Mail, Lock, ArrowLeft, Star, Heart, UserPlus, Loader2 } from 'lucide-react';
+import { LogIn, Mail, Lock, ArrowLeft, Star, Heart, UserPlus, Loader2, WifiOff } from 'lucide-react';
 import { Button } from '../common/Button';
 
 interface LoginScreenProps {
@@ -255,25 +255,20 @@ export function LoginScreen({
           </Button>
         </form>
 
-        <div className="mt-4 pt-4 border-t border-[#E8DFF0]">
-          <p className="text-[#8B7A9E] text-sm text-center mb-3">
-            New trainer?
-          </p>
+        <div className="mt-4 pt-4 border-t border-[#E8DFF0] space-y-3">
           <Button onClick={onSwitchToSignUp} variant="secondary" fullWidth>
             <span className="flex items-center justify-center gap-2">
               <UserPlus className="w-5 h-5" />
               Create Account
             </span>
           </Button>
-        </div>
 
-        <div className="mt-4">
-          <button
-            onClick={onPlayOffline}
-            className="w-full text-sm text-[#8B7A9E] hover:text-[#5D4E60] py-2 transition-colors"
-          >
-            Play offline (no account)
-          </button>
+          <Button onClick={onPlayOffline} variant="ghost" fullWidth>
+            <span className="flex items-center justify-center gap-2">
+              <WifiOff className="w-5 h-5" />
+              Play Offline
+            </span>
+          </Button>
         </div>
       </motion.div>
     </div>
