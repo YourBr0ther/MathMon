@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Volume2, VolumeX, LogOut, Music, MusicOff } from 'lucide-react';
+import { Volume2, VolumeX, LogOut, Music, Music2 } from 'lucide-react';
 import { Screen, Worksheet, Pokemon, WorksheetResult, DailyReward, AuthScreen } from './types';
 import { useGameState } from './hooks/useGameState';
 import { useSound } from './hooks/useSound';
@@ -427,7 +427,7 @@ function AppContent() {
           {isMusicEnabled ? (
             <Music className="w-5 h-5 text-[#8B7A9E]" />
           ) : (
-            <MusicOff className="w-5 h-5 text-[#8B7A9E]" />
+            <Music2 className="w-5 h-5 text-[#8B7A9E] opacity-50" />
           )}
         </motion.button>
 
