@@ -64,13 +64,13 @@ export function WorksheetSelect({ onNavigate, onSelectWorksheet }: WorksheetSele
                     className="worksheet-card text-left p-3 sm:p-4"
                   >
                     <div className="worksheet-icon text-2xl sm:text-3xl mb-1.5 sm:mb-2">{worksheet.icon}</div>
-                    <h3 className="font-display font-bold text-[#5D4E60] text-xs sm:text-sm">
+                    <h3 className="font-display font-bold text-primary text-xs sm:text-sm">
                       {worksheet.name}
                     </h3>
-                    <p className="text-[10px] sm:text-xs text-[#8B7A9E] mt-0.5 sm:mt-1 line-clamp-2">
+                    <p className="text-xs text-secondary mt-0.5 sm:mt-1 line-clamp-2">
                       {worksheet.description}
                     </p>
-                    <p className="text-[10px] sm:text-xs text-[#B8A8C8] mt-1.5 sm:mt-2">
+                    <p className="text-xs text-muted mt-1.5 sm:mt-2">
                       {worksheet.problemCount} problems
                     </p>
                   </button>

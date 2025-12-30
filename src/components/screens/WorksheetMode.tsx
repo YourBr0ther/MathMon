@@ -163,7 +163,7 @@ export function WorksheetMode({
             {stars === 3 ? '🏆' : stars === 2 ? '🎉' : stars === 1 ? '👍' : '💪'}
           </motion.div>
 
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          <h2 className="text-2xl font-bold text-primary mb-2">
             {stars === 3 ? 'Perfect!' : stars >= 2 ? 'Great Job!' : 'Keep Trying!'}
           </h2>
 
@@ -182,12 +182,12 @@ export function WorksheetMode({
             ))}
           </div>
 
-          <div className="bg-gray-100 rounded-xl p-4 mb-6">
+          <div className="bg-white/60 rounded-xl p-4 mb-6">
             <p className="text-lg">
               <span className="font-bold text-success">{correctCount}</span>
-              <span className="text-gray-500"> / {problems.length} correct</span>
+              <span className="text-muted"> / {problems.length} correct</span>
             </p>
-            <p className="text-sm text-gray-500">{percentage}% accuracy</p>
+            <p className="text-sm text-muted">{percentage}% accuracy</p>
           </div>
 
           {/* Reward Pokemon */}
@@ -198,7 +198,7 @@ export function WorksheetMode({
               transition={{ delay: 0.5 }}
               className="mb-6"
             >
-              <p className="text-sm text-gray-500 mb-2">You earned:</p>
+              <p className="text-sm text-muted mb-2">You earned:</p>
               <PokemonSprite
                 pokemon={rewardPokemon}
                 size="large"
@@ -226,7 +226,7 @@ export function WorksheetMode({
   }
 
   return (
-    <div className="min-h-screen flex flex-col p-4">
+    <div className="min-h-screen flex flex-col page-container">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <IconButton
@@ -293,10 +293,10 @@ export function WorksheetMode({
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               className="bg-white/95 backdrop-blur rounded-2xl px-4 py-3 shadow-lg border-2 border-[#E0C3FC] max-w-xs sm:max-w-sm text-center"
             >
-              <p className="text-[#6B5B7A] font-medium text-sm sm:text-base mb-1">
+              <p className="text-secondary font-medium text-sm sm:text-base mb-1">
                 {feedbackHint.message}
               </p>
-              <p className="text-[#8B7A9E] text-xs sm:text-sm">
+              <p className="text-muted text-xs sm:text-sm">
                 {feedbackHint.hint}
               </p>
             </motion.div>

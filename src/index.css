@@ -67,6 +67,12 @@
   --color-ghost: #A898C8;
   --color-steel: #C8C8D8;
   --color-dark: #A89888;
+
+  /* ===== TEXT COLORS ===== */
+  --color-text-primary: #5D4E60;      /* Dark purple - headings, titles */
+  --color-text-secondary: #6B5B7A;    /* Medium-dark purple - descriptions */
+  --color-text-muted: #8B7A9E;        /* Medium purple - less important text */
+  --color-text-light: #A89898;        /* Light text - disabled/placeholder */
 }
 
 * {
@@ -97,6 +103,31 @@ body {
 /* Display font for titles */
 .font-display {
   font-family: 'Fredoka', 'Comic Sans MS', cursive, sans-serif;
+}
+
+/* ===== TEXT COLOR UTILITIES ===== */
+.text-primary {
+  color: var(--color-text-primary);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-light {
+  color: var(--color-text-light);
+}
+
+.text-success {
+  color: var(--color-success);
+}
+
+.text-error {
+  color: var(--color-error);
 }
 
 /* ===== FLOATING BACKGROUND ELEMENTS ===== */
@@ -654,6 +685,17 @@ body {
   box-shadow:
     0 4px 15px rgba(255, 202, 40, 0.2),
     inset 0 0 20px rgba(255, 224, 130, 0.2);
+}
+
+.achievement-locked {
+  background: linear-gradient(135deg, #F8F8F8 0%, #F0F0F0 100%);
+  border-color: rgba(180, 180, 180, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.achievement-locked .achievement-icon {
+  filter: grayscale(100%);
+  opacity: 0.5;
 }
 
 /* ===== POKEDEX GRID ===== */

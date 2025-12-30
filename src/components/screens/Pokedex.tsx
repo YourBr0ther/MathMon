@@ -67,7 +67,7 @@ export function Pokedex({ caughtPokemon, onNavigate }: PokedexProps) {
     <div className="min-h-screen flex flex-col w-full overflow-x-hidden">
       {/* Header */}
       <div className="sticky top-0 z-10 pb-3 sm:pb-4 bg-gradient-to-b from-[#E0C3FC]/30 to-transparent backdrop-blur-sm">
-        <div className="flex items-center py-3 sm:py-4" style={{ paddingLeft: '16px', paddingRight: '16px' }}>
+        <div className="flex items-center py-3 sm:py-4 px-4 sm:px-6">
           <IconButton
             icon={<ArrowLeft className="w-5 h-5 text-[#6B5B7A]" />}
             onClick={() => onNavigate('home')}
@@ -78,7 +78,7 @@ export function Pokedex({ caughtPokemon, onNavigate }: PokedexProps) {
         </div>
 
         {/* Progress Card */}
-        <div style={{ marginLeft: '16px', marginRight: '16px' }}>
+        <div className="px-4 sm:px-6">
           <div className="game-card p-4 sm:p-5 relative overflow-hidden">
             {/* Decorative pokeball background */}
             <div className="absolute -right-8 -top-8 w-24 h-24 rounded-full border-4 border-[#FFADC6]/20 opacity-30" />
@@ -92,20 +92,20 @@ export function Pokedex({ caughtPokemon, onNavigate }: PokedexProps) {
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-[#FFE082] to-[#FFCA28] flex items-center justify-center shadow-md">
                     <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
-                  <span className="text-[#5D4E60] font-display font-bold text-sm sm:text-base">Collection</span>
+                  <span className="text-primary font-display font-bold text-sm sm:text-base">Collection</span>
                 </div>
                 <div className="text-right">
                   <span className="font-display font-bold text-[#8EC5FC] text-lg sm:text-xl">
                     {uniqueCount}
                   </span>
-                  <span className="text-[#8B7A9E] text-sm sm:text-base font-medium">/{MAX_POKEMON_ID}</span>
+                  <span className="text-muted text-sm sm:text-base font-medium">/{MAX_POKEMON_ID}</span>
                 </div>
               </div>
               <ProgressBar
                 current={uniqueCount}
                 max={MAX_POKEMON_ID}
               />
-              <p className="text-center text-xs sm:text-sm text-[#8B7A9E] mt-2 sm:mt-3 font-medium">
+              <p className="text-center text-xs sm:text-sm text-muted mt-2 sm:mt-3 font-medium">
                 {Math.round((uniqueCount / MAX_POKEMON_ID) * 100)}% of all Pokemon caught!
               </p>
             </div>
@@ -113,7 +113,7 @@ export function Pokedex({ caughtPokemon, onNavigate }: PokedexProps) {
         </div>
 
         {/* Filters & Sort */}
-        <div className="mt-3 sm:mt-4 flex gap-2 pb-2" style={{ marginLeft: '16px', marginRight: '16px' }}>
+        <div className="mt-3 sm:mt-4 flex gap-2 pb-2 px-4 sm:px-6">
           <div className="relative flex-1">
             <select
               value={sortBy}
@@ -151,7 +151,7 @@ export function Pokedex({ caughtPokemon, onNavigate }: PokedexProps) {
       </div>
 
       {/* Pokemon Grid */}
-      <div className="flex-1 py-3 sm:py-4" style={{ paddingLeft: '16px', paddingRight: '16px' }}>
+      <div className="flex-1 py-3 sm:py-4 px-4 sm:px-6">
         {sortedPokemon.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
             <motion.div
@@ -162,7 +162,7 @@ export function Pokedex({ caughtPokemon, onNavigate }: PokedexProps) {
               <Gamepad2 className="w-10 h-10 sm:w-12 sm:h-12 text-[#8EC5FC]" />
             </motion.div>
             <p className="title-sub text-lg sm:text-xl mb-2">No Pokemon yet!</p>
-            <p className="text-[#8B7A9E] text-sm sm:text-base">Play Pokemon Safari to catch some!</p>
+            <p className="text-muted text-sm sm:text-base">Play Pokemon Safari to catch some!</p>
             <Button onClick={() => onNavigate('endless')} className="mt-3 sm:mt-4">
               <span className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -231,11 +231,11 @@ export function Pokedex({ caughtPokemon, onNavigate }: PokedexProps) {
                   />
                 </motion.div>
 
-                <h2 className="font-display text-xl sm:text-2xl font-bold text-[#5D4E60] mt-3 sm:mt-4">
+                <h2 className="font-display text-xl sm:text-2xl font-bold text-primary mt-3 sm:mt-4">
                   {selectedPokemon.name}
                 </h2>
 
-                <p className="text-[#8B7A9E] text-xs sm:text-sm">#{selectedPokemon.id.toString().padStart(3, '0')}</p>
+                <p className="text-muted text-xs sm:text-sm">#{selectedPokemon.id.toString().padStart(3, '0')}</p>
 
                 <div className="flex gap-2 mt-2 sm:mt-3">
                   {selectedPokemon.types.map(type => (
@@ -244,16 +244,16 @@ export function Pokedex({ caughtPokemon, onNavigate }: PokedexProps) {
                 </div>
 
                 <div className="mt-3 sm:mt-4 text-center card-soft p-3 sm:p-4 w-full">
-                  <p className="text-xs sm:text-sm text-[#5D4E60]">
+                  <p className="text-xs sm:text-sm text-primary">
                     Rarity: <span className="font-display font-semibold capitalize text-[#FFCA28]">{getPokemonRarity(selectedPokemon.id)}</span>
                   </p>
                   {selectedPokemon.caughtAt && (
-                    <p className="text-[10px] sm:text-xs text-[#8B7A9E] mt-1">
+                    <p className="text-xs text-muted mt-1">
                       Caught: {new Date(selectedPokemon.caughtAt).toLocaleDateString()}
                     </p>
                   )}
                   {selectedPokemon.caughtWithProblem && (
-                    <p className="text-[10px] sm:text-xs text-[#8B7A9E] mt-1">
+                    <p className="text-xs text-muted mt-1">
                       Problem: {selectedPokemon.caughtWithProblem}
                     </p>
                   )}
